@@ -3,24 +3,35 @@ import argparse
 import subprocess
 import sys
 
+
 def run(cmd: list[str]) -> int:
     print(f"Running: {' '.join(cmd)}")
     return subprocess.call(cmd)
 
+
 def cmd_up(args):
     sys.exit(run(["docker-compose", "up", "-d"]))
+
 
 def cmd_down(args):
     sys.exit(run(["docker-compose", "down"]))
 
+
 def cmd_logs(args):
     sys.exit(run(["docker-compose", "logs", "-f"]))
+
 
 def cmd_test(args):
     sys.exit(run(["npm", "test"]))
 
+
 def cmd_lint(args):
     sys.exit(run(["npm", "run", "lint"]))
+
+
+def cmd_scan(args):
+    sys.exit(run(["python", "scripts/security_scan.py"]))
+
 
 def main():
     parser = argparse.ArgumentParser(description="Project management CLI")
@@ -32,6 +43,9 @@ def main():
     subparsers.add_parser("test").set_defaults(func=cmd_test)
     subparsers.add_parser("lint").set_defaults(func=cmd_lint)
 
+    scan_parser = subparsers.add_parser("scan")
+    scan_parser.set_defaults(func=cmd_scan)
+
     args = parser.parse_args()
 
     if not hasattr(args, "func"):
@@ -39,6 +53,7 @@ def main():
         sys.exit(1)
 
     args.func(args)
+
 
 if __name__ == "__main__":
     main()
